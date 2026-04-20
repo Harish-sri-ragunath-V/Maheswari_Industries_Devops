@@ -1,0 +1,1350 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Dashboard — Maheswari Industries</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    :root {
+      --sidebar-width: 260px;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --primary: #c4a484;
+      --primary-dark: #a68b6d;
+      --secondary: #2c2c2c;
+      --text: #333;
+      --text-muted: #666;
+      --bg: #f8f9fa;
+      --white: #ffffff;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--secondary);
+      color: var(--white);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 3rem;
+      cursor: pointer;
+    }
+
+    .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .brand h2 {
+      font-size: 1.25rem;
+      letter-spacing: 1px;
+    }
+
+    .nav-menu {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-item {
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 2rem;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 2rem 3rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--white);
+      padding: 8px 16px;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .header-user img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    /* Tabs */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border: 1px solid var(--white);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .stat-info h3 {
+      font-size: 1.75rem;
+      margin-bottom: 4px;
+    }
+
+    .stat-info p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Tables & Cards */
+    .data-section {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--bg);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--bg);
+    }
+
+    .product-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Gallery Grid */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .gallery-item {
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      height: 200px;
+      box-shadow: var(--shadow);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .item-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+    .gallery-item:hover .item-overlay {
+      opacity: 1;
+    }
+
+    /* Actions */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--white);
+      width: 90%;
+      max-width: 500px;
+      padding: 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2px solid var(--bg);
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(196, 164, 132, 0.1);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .modal-content {
+      max-height: 85vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) var(--bg);
+    }
+
+    /* Modal Scrollbar */
+    .modal-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    /* Drag and Drop Zone */
+    .drag-drop-zone {
+      border: 2px dashed var(--primary);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      background: rgba(196, 164, 132, 0.05);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .drag-drop-zone:hover {
+      border-color: var(--primary-dark);
+      background: rgba(196, 164, 132, 0.1);
+    }
+
+    .drag-drop-zone.drag-over {
+      border-color: var(--primary-dark);
+      background: rgba(196, 164, 132, 0.15);
+      box-shadow: 0 0 0 4px rgba(196, 164, 132, 0.1);
+      transform: scale(1.02);
+    }
+
+    .drag-drop-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand" onclick="window.location.href='index.html'">
+      <img src="img/logo.jpg" alt="Logo">
+      <h2>MAHESWARI INDUSTRIES</h2>
+    </div>
+    <div class="nav-menu">
+      <div class="nav-item active" onclick="switchTab('dashboard', this)"><i class="fas fa-home"></i> Overview</div>
+      <div class="nav-item" onclick="switchTab('products', this)"><i class="fas fa-box"></i> Products</div>
+      <div class="nav-item" onclick="switchTab('gallery', this)"><i class="fas fa-images"></i> Gallery</div>
+      <div class="nav-item" onclick="switchTab('orders', this)"><i class="fas fa-shopping-bag"></i> Orders</div>
+      <div class="nav-item" onclick="switchTab('messages', this)"><i class="fas fa-envelope"></i> Enquiries</div>
+      <div class="nav-item" onclick="switchTab('users', this)"><i class="fas fa-users"></i> Customers</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="nav-item" onclick="window.location.href='index.html'"><i class="fas fa-external-link-alt"></i> View
+        Shop</div>
+      <div class="nav-item" onclick="handleLogout()" style="color: var(--danger);"><i class="fas fa-power-off"></i>
+        Logout</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="header">
+      <h1 id="tabTitle">Overview</h1>
+      <div class="header-user">
+        <img src="https://ui-avatars.com/api/?name=Admin&background=c4a484&color=fff" alt="User">
+        <span id="adminName">Admin</span>
+      </div>
+    </div>
+
+    <!-- Dashboard Tab -->
+    <div id="dashboard" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #e0f2fe; color: #0ea5e9;"><i class="fas fa-couch"></i></div>
+          <div class="stat-info">
+            <h3 id="statProducts">0</h3>
+            <p>Total Products</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fef3c7; color: #d97706;"><i class="fas fa-images"></i></div>
+          <div class="stat-info">
+            <h3 id="statGallery">0</h3>
+            <p>Gallery Items</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fas fa-envelope"></i></div>
+          <div class="stat-info">
+            <h3 id="statMessages">0</h3>
+            <p>New Enquiries</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #fdf2f2; color: #ef4444;"><i class="fas fa-shopping-bag"></i></div>
+          <div class="stat-info">
+            <h3 id="statOrders">0</h3>
+            <p>Total Orders</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #f3e8ff; color: #9333ea;"><i class="fas fa-users"></i></div>
+          <div class="stat-info">
+            <h3 id="statUsers">0</h3>
+            <p>Total Customers</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-section">
+        <h3>Recent Enquiries</h3>
+        <div class="table-container">
+          <table id="recentEnquiriesTable">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Tab -->
+    <div id="products" class="tab-content">
+      <div class="data-section">
+        <div class="section-header">
+          <h3>Manage Products</h3>
+          <button class="btn btn-primary" onclick="openAddProductModal()"><i class="fas fa-plus"></i> Add
+            Product</button>
+        </div>
+        <div class="table-container">
+          <table id="productsTable">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Rating</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody> <!-- Dynamic --> </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gallery Tab -->
+    <div id="gallery" class="tab-content">
+      <div class="data-section">
+        <div class="section-header">
+          <h3>Gallery Feed</h3>
+          <button class="btn btn-primary" onclick="openModal('galModal')"><i class="fas fa-upload"></i> Upload
+            Image</button>
+        </div>
+        <div class="gallery-grid" id="galleryGrid"> <!-- Dynamic --> </div>
+      </div>
+    </div>
+
+    <!-- Orders Tab -->
+    <div id="orders" class="tab-content">
+      <div class="data-section">
+        <h3>Customer Orders</h3>
+        <div class="table-container">
+          <table id="ordersTable">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody> <!-- Dynamic --> </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Tab -->
+    <div id="messages" class="tab-content">
+      <div class="data-section">
+        <h3>Customer Enquiries</h3>
+        <div class="table-container">
+          <table id="fullEnquiriesTable">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody> <!-- Dynamic --> </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="users" class="tab-content">
+      <div class="data-section">
+        <h3>Customer Database</h3>
+        <div class="table-container">
+          <table id="usersTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Join Date</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody> <!-- Dynamic --> </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modals -->
+  <div id="prodModal" class="modal">
+    <div class="modal-content">
+      <h3>Add New Product</h3>
+      <form id="productForm" onsubmit="handleProductSubmit(event)">
+        <input type="hidden" id="pId">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="pTitle" class="form-control" required>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Category</label>
+            <input type="text" id="pCategory" class="form-control" list="categoryList" placeholder="Type or select category" oninput="updateSubcategoryOptions()" required>
+            <datalist id="categoryList">
+              <option value="Living">
+              <option value="Bedroom">
+              <option value="Dining">
+              <option value="Storage">
+              <option value="Seating">
+              <option value="Study">
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label>Subcategory</label>
+            <input type="text" id="pSubcategory" class="form-control" list="subcategoryList" placeholder="Type or select subcategory" required>
+            <datalist id="subcategoryList">
+              <!-- Dynamic -->
+            </datalist>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" id="pPrice" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Original Price (₹)</label>
+            <input type="number" id="pOriginalPrice" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="pDesc" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Stock Status</label>
+          <select id="pStatus" class="form-control" required>
+            <option value="In-stock">In-stock</option>
+            <option value="Out-of-stock">Out-of-stock</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Product Image</label>
+          <div id="imageDragZone" class="drag-drop-zone">
+            <input type="file" id="pImage" class="form-control" accept="image/*" required style="display: none;">
+            <div class="drag-drop-content">
+              <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+              <p style="font-weight: 600; margin-bottom: 0.5rem;">Drag & Drop Image Here</p>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">or</p>
+              <button type="button" class="btn btn-primary" onclick="document.getElementById('pImage').click()">
+                <i class="fas fa-folder-open"></i> Choose File
+              </button>
+              <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">Supported: JPG, PNG, GIF, WebP</p>
+            </div>
+            <div id="imagePreview" style="display: none; margin-top: 1rem;">
+              <img id="previewImg" style="max-width: 100%; max-height: 300px; border-radius: 12px;">
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+          <button type="submit" id="saveProdBtn" class="btn btn-primary" style="flex: 1;">Save Product</button>
+          <button type="button" class="btn btn-danger" onclick="closeModalAndReset('prodModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="galModal" class="modal">
+    <div class="modal-content">
+      <h3>Upload Gallery Image</h3>
+      <form id="galleryForm" onsubmit="handleGallerySubmit(event)">
+        <div class="form-group">
+          <label>Gallery Image</label>
+          <div id="galDragZone" class="drag-drop-zone">
+            <input type="file" id="gImage" class="form-control" accept="image/*" required style="display: none;">
+            <div class="drag-drop-content">
+              <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+              <p style="font-weight: 600; margin-bottom: 0.5rem;">Drag & Drop Image Here</p>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">or</p>
+              <button type="button" class="btn btn-primary" onclick="document.getElementById('gImage').click()">
+                <i class="fas fa-folder-open"></i> Choose File
+              </button>
+              <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 1rem;">Supported: JPG, PNG, GIF, WebP</p>
+            </div>
+            <div id="galImagePreview" style="display: none; margin-top: 1rem;">
+              <img id="galPreviewImg" style="max-width: 100%; max-height: 300px; border-radius: 12px;">
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Upload</button>
+          <button type="button" class="btn btn-danger" onclick="closeModal('galModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="orderDetailModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h3>Order Details</h3>
+        <button onclick="closeModal('orderDetailModal')"
+          style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+      <div id="orderDetailContent">
+        <!-- Dynamic -->
+      </div>
+      <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <button id="detailDownloadBtn" class="btn btn-primary" style="flex: 1;"><i class="fas fa-file-invoice"></i>
+          Download Bill</button>
+        <button class="btn btn-secondary" onclick="closeModal('orderDetailModal')"
+          style="flex: 1; background: #eee;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+  <script>
+    // Constants
+    // API points to the one defined in script.js
+
+    // Init
+    window.addEventListener('load', () => {
+      const sess = getSession();
+      if (!sess || !sess.isAdmin) {
+        window.location.href = 'index.html';
+        return;
+      }
+      document.getElementById('adminName').textContent = sess.name;
+      loadAllData();
+    });
+
+    function switchTab(tabId, el) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      // Remove active class from all nav items
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+      // Show selected tab
+      const targetTab = document.getElementById(tabId);
+      if (targetTab) {
+        targetTab.classList.add('active');
+      }
+
+      // Highlight selected nav item
+      if (el) {
+        el.classList.add('active');
+      }
+
+      // Update header title
+      const title = document.getElementById('tabTitle');
+      if (title) {
+        title.textContent = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+      }
+
+      loadAllData();
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      // Initialize drag-drop for gallery when modal opens
+      if (id === 'galModal') {
+        initGalleryDragDrop();
+      }
+    }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function openAddProductModal() {
+      // Complete reset of the product form
+      document.getElementById('productForm').reset();
+      document.getElementById('pId').value = '';
+      document.querySelector('#prodModal h3').textContent = 'Add New Product';
+      document.getElementById('saveProdBtn').textContent = 'Save Product';
+      document.getElementById('pImage').required = true;
+      updateSubcategoryOptions();
+      openModal('prodModal');
+    }
+
+    function closeModalAndReset(id) {
+      if (id === 'prodModal') {
+        document.getElementById('productForm').reset();
+        document.getElementById('pId').value = '';
+      }
+      closeModal(id);
+    }
+
+    const SUB_CATS = {
+      'Living': ['Sofas', 'Seating', 'Tables'],
+      'Bedroom': ['Beds', 'Storage', 'Mattresses'],
+      'Dining': ['Dining Sets', 'Dining Furniture', 'Kitchen'],
+      'Storage': ['Living Storage', 'Cabinets'],
+      'Seating': ['Lounge Chairs', 'Accent Chairs'],
+      'Study': ['Desks', 'Chairs']
+    };
+
+    async function updateSubcategoryOptions() {
+      const cat = document.getElementById('pCategory').value;
+      const subDatalist = document.getElementById('subcategoryList');
+      
+      try {
+        const res = await fetch(`${API_URL}/subcategories/${cat}`);
+        const subs = await res.json();
+        subDatalist.innerHTML = subs.map(s => `<option value="${s}">`).join('');
+      } catch (err) {
+        // Fallback to hardcoded values if API fails
+        const subs = SUB_CATS[cat] || [];
+        subDatalist.innerHTML = subs.map(s => `<option value="${s}">`).join('');
+      }
+    }
+
+    async function loadCategoryOptions() {
+      const categoryDatalist = document.getElementById('categoryList');
+      try {
+        const res = await fetch(`${API_URL}/categories`);
+        const categories = await res.json();
+        categoryDatalist.innerHTML = categories.map(c => `<option value="${c}">`).join('');
+      } catch (err) {
+        console.warn("Failed to load categories from API", err);
+        // Fallback: keep existing hardcoded categories
+      }
+    }
+
+    // Initial subcategories load
+    window.addEventListener('load', () => {
+      if (document.getElementById('pCategory')) {
+        loadCategoryOptions();
+        updateSubcategoryOptions();
+      }
+      initDragDrop();
+    });
+
+    // Drag and Drop Image Upload
+    function initDragDrop() {
+      const dragZone = document.getElementById('imageDragZone');
+      const fileInput = document.getElementById('pImage');
+      const imagePreview = document.getElementById('imagePreview');
+      const previewImg = document.getElementById('previewImg');
+
+      if (!dragZone || !fileInput) return;
+
+      // Click to upload
+      dragZone.addEventListener('click', () => fileInput.click());
+
+      // Drag over
+      dragZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dragZone.classList.add('drag-over');
+      });
+
+      // Drag leave
+      dragZone.addEventListener('dragleave', () => {
+        dragZone.classList.remove('drag-over');
+      });
+
+      // Drop
+      dragZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragZone.classList.remove('drag-over');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          const file = files[0];
+          if (file.type.startsWith('image/')) {
+            fileInput.files = files;
+            displayImagePreview(file, previewImg, imagePreview);
+          } else {
+            alert('Please drop an image file');
+          }
+        }
+      });
+
+      // File input change
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          displayImagePreview(e.target.files[0], previewImg, imagePreview);
+        }
+      });
+    }
+
+    function displayImagePreview(file, previewImg, imagePreview) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        imagePreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Gallery Drag and Drop
+    function initGalleryDragDrop() {
+      const dragZone = document.getElementById('galDragZone');
+      const fileInput = document.getElementById('gImage');
+      const imagePreview = document.getElementById('galImagePreview');
+      const previewImg = document.getElementById('galPreviewImg');
+
+      if (!dragZone || !fileInput) return;
+
+      // Click to upload
+      dragZone.addEventListener('click', () => fileInput.click());
+
+      // Drag over
+      dragZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dragZone.classList.add('drag-over');
+      });
+
+      // Drag leave
+      dragZone.addEventListener('dragleave', () => {
+        dragZone.classList.remove('drag-over');
+      });
+
+      // Drop
+      dragZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragZone.classList.remove('drag-over');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          const file = files[0];
+          if (file.type.startsWith('image/')) {
+            fileInput.files = files;
+            displayImagePreview(file, previewImg, imagePreview);
+          } else {
+            alert('Please drop an image file');
+          }
+        }
+      });
+
+      // File input change
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          displayImagePreview(e.target.files[0], previewImg, imagePreview);
+        }
+      });
+    }
+
+    async function loadAllData() {
+      try {
+        const [pRes, gRes, mRes, uRes, oRes] = await Promise.all([
+          fetch(`${API_URL}/products`),
+          fetch(`${API_URL}/images`),
+          fetch(`${API_URL}/messages`),
+          fetch(`${API_URL}/users`),
+          fetch(`${API_URL}/orders`)
+        ]);
+
+        const products = pRes.ok ? await pRes.json() : [];
+        const gallery = gRes.ok ? await gRes.json() : [];
+        const messages = mRes.ok ? await mRes.json() : [];
+        const users = uRes.ok ? await uRes.json() : [];
+        const orders = oRes.ok ? await oRes.json() : [];
+
+        // Update Stats
+        document.getElementById('statProducts').textContent = products.length;
+        document.getElementById('statGallery').textContent = gallery.length;
+        document.getElementById('statMessages').textContent = messages.filter(m => m.status === 'pending').length;
+        document.getElementById('statUsers').textContent = users.length;
+        document.getElementById('statOrders').textContent = orders.length;
+
+        renderAdminProducts(products);
+        renderAdminGallery(gallery);
+        renderAdminMessages(messages);
+        renderAdminUsers(users);
+        renderAdminOrders(orders);
+
+      } catch (err) {
+        console.error("Data load failed", err);
+      }
+    }
+
+    function renderAdminProducts(data) {
+      if (!data) return;
+      const tbody = document.querySelector('#productsTable tbody');
+      tbody.innerHTML = data.map(p => {
+        const imgSrc = (p.img && (p.img.startsWith('http') || p.img.startsWith('data:'))) ? p.img : `data:image/jpeg;base64,${p.img}`;
+        const status = p.status || 'In-stock';
+        const statusColor = status === 'In-stock' ? '#dcfce7' : '#fee2e2';
+        const statusTextColor = status === 'In-stock' ? '#16a34a' : '#dc2626';
+        return `
+        <tr>
+          <td>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img src="${imgSrc}" class="product-thumb">
+              <span>${p.title}</span>
+            </div>
+          </td>
+          <td>
+            <span style="font-weight: 500;">${p.category}</span><br>
+            <small style="color: var(--text-muted);">${p.subcategory || '-'}</small>
+          </td>
+          <td>₹${p.price.toLocaleString()}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 4px; color: #ffc107;">
+              <i class="fas fa-star"></i>
+              <span style="color: var(--text); font-weight: 600;">${p.rating || 0}</span>
+              <small style="color: var(--text-muted);">(${p.reviews || 0})</small>
+            </div>
+          </td>
+          <td><span class="badge" style="background: ${statusColor}; color: ${statusTextColor}; cursor: pointer; padding: 8px 16px;" onclick="quickChangeStatus('${p.id}', '${status}')" title="Click to change status">${status}</span></td>
+          <td style="display: flex; gap: 10px;">
+            <button class="btn btn-sm" style="color:blue; background-color:lightblue;" onclick="editItem('products', '${p.id}')"><i class="fas fa-edit"></i></button><br>
+            <button class="btn btn-sm btn-danger" onclick="deleteItem('products', '${p.id}')"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      `;
+      }).join('');
+    }
+
+    function renderAdminGallery(data) {
+      const grid = document.getElementById('galleryGrid');
+      grid.innerHTML = data.map((img) => `
+        <div class="gallery-item">
+          <img src="data:image/jpeg;base64,${img.image}">
+          <div class="item-overlay">
+             <button class="btn btn-danger btn-sm" onclick="deleteItem('images', '${img.id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAdminMessages(data) {
+      // Recent table
+      const recentBody = document.querySelector('#recentEnquiriesTable tbody');
+      recentBody.innerHTML = data.slice(0, 5).map(m => `
+        <tr>
+          <td><strong>${m.name || 'Anonymous'}</strong></td>
+          <td>${(m.body || "").substring(0, 30)}${(m.body && m.body.length > 30) ? "..." : ""}</td>
+          <td><span class="badge" style="background: ${m.status === 'pending' ? '#fff7ed' : '#dcfce7'}; color: ${m.status === 'pending' ? '#c2410c' : '#16a34a'};">${m.status || 'pending'}</span></td>
+          <td>${m.createdAt ? new Date(m.createdAt).toLocaleDateString() : 'N/A'}</td>
+        </tr>
+      `).join('');
+
+      // Full table
+      const fullBody = document.querySelector('#fullEnquiriesTable tbody');
+      fullBody.innerHTML = data.map(m => `
+        <tr>
+          <td><strong>${m.name || 'Anonymous'}</strong></td>
+          <td>${m.email || 'N/A'}<br><small>${m.phone || 'N/A'}</small></td>
+          <td>${m.body || 'No content'}</td>
+          <td><span class="badge" style="background: ${getStatusColor(m.status).bg}; color: ${getStatusColor(m.status).text};">${m.status || 'pending'}</span></td>
+          <td>
+            <div style="display: flex; gap: 4px;">
+              <a href="mailto:${m.email}?subject=Re: Your Enquiry - Maheswari Industries&body=Dear ${m.name},%0D%0A%0D%0AThank you for contacting Maheswari Industries.%0D%0A%0D%0A" class="btn btn-sm" style="background: #e0f2fe; color: #0ea5e9; text-decoration: none;" title="Respond via Email"><i class="fas fa-envelope"></i></a>
+              <button class="btn btn-sm" onclick="updateMessage('${m._id}', 'responded')" title="Mark as Responded"><i class="fas fa-check"></i></button>
+              <button class="btn btn-sm btn-danger" onclick="deleteItem('messages', '${m._id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAdminUsers(data) {
+      if (!data) return;
+      const tbody = document.querySelector('#usersTable tbody');
+      tbody.innerHTML = data.map(u => `
+        <tr>
+          <td><strong>${u.name}</strong></td>
+          <td>${u.email}</td>
+          <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+          <td><span class="badge" style="background: ${u.role === 'admin' ? '#fee2e2' : '#f3f4f6'};">${u.role}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    let currentOrders = [];
+    function renderAdminOrders(data) {
+      if (!data) return;
+      currentOrders = data;
+      const tbody = document.querySelector('#ordersTable tbody');
+      tbody.innerHTML = data.map((o, index) => `
+        <tr>
+          <td>#${o._id ? o._id.substring(o._id.length - 6).toUpperCase() : 'UNKNOWN'}</td>
+          <td>
+            <strong>${o.shippingAddress.fullName}</strong><br>
+            <small>${o.userId && typeof o.userId === 'object' ? o.userId.email : (o.userId || 'Guest')}</small>
+          </td>
+          <td>₹${o.totalAmount.toLocaleString()}</td>
+          <td>${new Date(o.createdAt).toLocaleDateString()}</td>
+          <td><span class="badge" style="background: ${getStatusColor(o.status).bg}; color: ${getStatusColor(o.status).text};">${o.status}</span></td>
+          <td>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="btn btn-sm" style="background: #e0f2fe; color: #0ea5e9;" onclick="showOrderDetailsByIndex(${index})" title="View Details"><i class="fas fa-eye"></i></button>
+              <select class="form-control" style="padding: 4px 8px; font-size: 0.85rem; width: auto;" onchange="updateOrderStatus('${o._id}', this.value)">
+                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                <option value="out for delivery" ${o.status === 'out for delivery' ? 'selected' : ''}>Out for Delivery</option>
+                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+              </select>
+              <button class="btn btn-sm btn-danger" onclick="deleteItem('orders', '${o._id}')" title="Delete Order"><i class="fas fa-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function showOrderDetailsByIndex(index) {
+      const o = currentOrders[index];
+      if (!o) return;
+      showOrderDetails(o);
+    }
+
+    function showOrderDetails(o) {
+      const content = document.getElementById('orderDetailContent');
+      content.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+          <div>
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Customer Info</h4>
+            <p><strong>${o.shippingAddress.fullName}</strong></p>
+            <p>${o.shippingAddress.phone}</p>
+          </div>
+          <div>
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Shipping Address</h4>
+            <p>${o.shippingAddress.address}</p>
+            <p>${o.shippingAddress.city} - ${o.shippingAddress.pincode}</p>
+          </div>
+        </div>
+        
+        <h4 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Order Items</h4>
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+          <thead style="background: #f8f9fa;">
+            <tr>
+              <th style="text-align: left; padding: 0.5rem;">Item</th>
+              <th style="text-align: center; padding: 0.5rem;">Price</th>
+              <th style="text-align: center; padding: 0.5rem;">Qty</th>
+              <th style="text-align: right; padding: 0.5rem;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${o.items.map(item => `
+              <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">${item.title}</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #eee; text-align: center;">₹${item.price.toLocaleString()}</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #eee; text-align: center;">${item.qty}</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #eee; text-align: right;">₹${(item.price * item.qty).toLocaleString()}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="padding: 0.5rem; text-align: right; font-weight: bold;">Grand Total</td>
+              <td style="padding: 0.5rem; text-align: right; font-weight: bold; color: var(--primary);">₹${o.totalAmount.toLocaleString()}</td>
+            </tr>
+          </tfoot>
+        </table>
+        
+        <div style="margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 12px; display: flex; justify-content: space-between;">
+           <span>Payment Method: <strong>${o.paymentMethod}</strong></span>
+           <span>Status: <strong style="color: ${getStatusColor(o.status).text}">${o.status.toUpperCase()}</strong></span>
+        </div>
+      `;
+
+      document.getElementById('detailDownloadBtn').onclick = () => generateOrderBill(o);
+      openModal('orderDetailModal');
+    }
+
+    function getStatusColor(status) {
+      switch (status) {
+        case 'pending': return { bg: '#fff7ed', text: '#c2410c' };
+        case 'shipped': return { bg: '#e0f2fe', text: '#0369a1' };
+        case 'out for delivery': return { bg: '#fef3c7', text: '#d97706' };
+        case 'delivered': return { bg: '#dcfce7', text: '#15803d' };
+        case 'responded': return { bg: '#dcfce7', text: '#15803d' };
+        default: return { bg: '#f3f4f6', text: '#374151' };
+      }
+    }
+
+    async function updateOrderStatus(id, status) {
+      await fetch(`${API_URL}/orders/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      loadAllData();
+    }
+
+    async function handleProductSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('pId').value;
+      const formData = new FormData();
+      formData.append('title', document.getElementById('pTitle').value);
+      formData.append('category', document.getElementById('pCategory').value);
+      formData.append('subcategory', document.getElementById('pSubcategory').value);
+      formData.append('price', document.getElementById('pPrice').value);
+      formData.append('originalPrice', document.getElementById('pOriginalPrice').value);
+      formData.append('desc', document.getElementById('pDesc').value);
+      formData.append('status', document.getElementById('pStatus').value);
+
+      const fileInput = document.getElementById('pImage');
+      if (fileInput.files[0]) {
+        formData.append('image', fileInput.files[0]);
+      }
+
+      const url = id ? `${API_URL}/products/${id}` : `${API_URL}/products`;
+      const method = id ? 'PATCH' : 'POST';
+
+      const res = await fetch(url, { method, body: formData });
+      if (res.ok) {
+        closeModalAndReset('prodModal');
+        loadAllData();
+      }
+    }
+
+    async function handleGallerySubmit(e) {
+      e.preventDefault();
+      const formData = new FormData();
+      const sess = getSession();
+      formData.append('image', document.getElementById('gImage').files[0]);
+      formData.append('user_id', sess.id);
+
+      const res = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+      if (res.ok) {
+        closeModal('galModal');
+        loadAllData();
+      }
+    }
+
+    async function updateMessage(id, status) {
+      await fetch(`${API_URL}/messages/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      loadAllData();
+    }
+
+    async function deleteItem(type, id) {
+      if (!confirm('Permanent delete?')) return;
+      await fetch(`${API_URL}/${type}/${id}`, { method: 'DELETE' });
+      loadAllData();
+    }
+    async function editItem(type, id) {
+      if (type === 'products') {
+        try {
+          // Find the product in the table or fetch it
+          const res = await fetch(`${API_URL}/products`);
+          const products = await res.json();
+          const p = products.find(prod => prod.id === id || prod._id === id);
+
+          if (!p) return;
+
+          // Fill the form
+          document.getElementById('pId').value = p.id || p._id;
+          document.getElementById('pTitle').value = p.title;
+          document.getElementById('pCategory').value = p.category;
+          document.getElementById('pSubcategory').value = p.subcategory;
+          updateSubcategoryOptions();
+          document.getElementById('pPrice').value = p.price;
+          document.getElementById('pOriginalPrice').value = p.originalPrice || '';
+          document.getElementById('pDesc').value = p.desc || '';
+          document.getElementById('pStatus').value = p.status || 'In-stock';
+
+          // Image is not required for editing
+          document.getElementById('pImage').required = false;
+
+          // Update modal UI
+          document.querySelector('#prodModal h3').textContent = 'Edit Product';
+          document.getElementById('saveProdBtn').textContent = 'Update Product';
+
+          openModal('prodModal');
+        } catch (err) {
+          console.error("Failed to load product for editing", err);
+        }
+      }
+    }
+
+    // Quick Status Change without opening edit modal
+    async function quickChangeStatus(productId, currentStatus) {
+      const newStatus = currentStatus === 'In-stock' ? 'Out-of-stock' : 'In-stock';
+      
+      if (!confirm(`Change status from "${currentStatus}" to "${newStatus}"?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/products/${productId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        if (response.ok) {
+          showNotification(`Product status updated to "${newStatus}"!`);
+          loadAllData();
+        } else {
+          showNotification('Failed to update status', 'error');
+        }
+      } catch (err) {
+        console.error('Error updating status:', err);
+        showNotification('Error updating status', 'error');
+      }
+    }
+
+  </script>
+</body>
+
+</html>

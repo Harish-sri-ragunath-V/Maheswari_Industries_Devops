@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Product Details - MAHESWARI INDUSTRIES</title>
+    <meta name="description" content="Product details at Maheswari Industries." />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .breadcrumb-nav {
+            margin-bottom: 2rem;
+        }
+
+        .btn-back {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            padding: 0;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .btn-back:hover {
+            color: var(--accent);
+            transform: translateX(-5px);
+        }
+
+        .product-detail-section {
+            padding: 4rem 0;
+            background: #fdfdfd;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .product-gallery {
+            position: sticky;
+            top: 100px;
+        }
+
+        .main-image-container {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .main-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .product-info-column .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .product-info-column h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .product-info-column .category {
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-wrapper {
+            margin: 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .price-wrapper .current-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .price-wrapper .original-price {
+            font-size: 1.25rem;
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+
+        .short-desc {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .product-options {
+            margin-bottom: 2rem;
+        }
+
+        .option-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: block;
+            color: var(--primary);
+        }
+
+        .size-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .size-btn {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .size-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .size-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .qty-selector {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .qty-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            background: #f8f9fa;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--primary);
+            transition: background 0.3s ease;
+        }
+
+        .qty-btn:hover {
+            background: #eee;
+        }
+
+        .qty-input {
+            width: 60px;
+            height: 50px;
+            border: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            height: 50px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .product-meta {
+            border-top: 1px solid #eee;
+            padding-top: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .meta-label {
+            width: 120px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .meta-value {
+            color: var(--text-muted);
+        }
+
+        /* Suggested Products */
+        .suggested-section {
+            padding: 5rem 0;
+            background: #fff;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 992px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .product-gallery {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Header -->
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="brand" onclick="window.location.href='index.html'">
+                <div class="logo-box">
+                    <img src="img/logo.jpg" alt="Maheswari Industries Logo">
+                </div>
+                <div class="brand-text">
+                    <h1>SRI MAHESWARI INDUSTRIES</h1>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="headerSearch" placeholder="Search for furniture, sofas, beds...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="header-actions">
+                <div class="header-action-item" onclick="window.location.href='index.html#contact'">
+                    <i class="fas fa-headset"></i>
+                    <span>Help</span>
+                </div>
+                <div class="header-action-item" onclick="toggleWishlist()">
+                    <i class="fas fa-heart"></i>
+                    <span>Wishlist</span>
+                    <span class="action-badge" id="wishlistCount">0</span>
+                </div>
+                <div class="header-action-item" onclick="window.location.href='cart.html'">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Cart</span>
+                    <span class="action-badge" id="cartCount">0</span>
+                </div>
+                <div class="header-action-item user-dropdown">
+                    <i class="fas fa-user"></i>
+                    <span id="userDisplayName">Account</span>
+                    <div class="user-dropdown-menu">
+                        <a href="#" onclick="openAuth('login')" id="loginDropdownBtn"><i class="fas fa-sign-in-alt"></i>
+                            Login</a>
+                        <a href="#" onclick="openAuth('register')" id="signupDropdownBtn"><i
+                                class="fas fa-user-plus"></i> Sign Up</a>
+                        <a href="orders.html" id="trackOrderDropdownBtn" class="hidden"><i
+                                class="fas fa-truck"></i> My Orders</a>
+                        <a href="#" onclick="handleLogout()" id="logoutDropdownBtn" class="hidden"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
+                        <hr>
+                        <a href="#" onclick="openAdminAuth()"><i class="fas fa-lock"></i> Admin Login</a>
+                        <a href="admin.html" class="hidden" id="adminDashboardLink"><i
+                                class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="product-detail-section">
+            <div class="container">
+                <div class="breadcrumb-nav">
+                    <button class="btn-back" onclick="window.location.href='index.html#collections'">
+                        <i class="fas fa-arrow-left"></i> Back to Products
+                    </button>
+                </div>
+                <div class="detail-grid" id="productDetailContainer">
+                    <!-- Loading State -->
+                    <div style="grid-column: 1/-1; text-align: center; padding: 5rem;">
+                        <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--accent);"></i>
+                        <h2 style="margin-top: 1rem;">Loading Product Details...</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Suggested Products -->
+        <section class="suggested-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Related Products</h2>
+                    <p>You might also like these beautiful pieces</p>
+                </div>
+                <div id="suggestedProductsGrid" class="product-grid">
+                    <!-- Randomly selected related products -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footers and Modals (simplified or copy from index.html) -->
+    <footer class="main-footer" style="padding: 4rem 0; background: #1a1a1a; color: #fff;">
+        <div class="container">
+            <div style="text-align: center;">
+                <p>&copy; 2026 Sri Maheswari Industries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Cart Drawer -->
+    <div class="drawer-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <div class="drawer" id="cartDrawer">
+        <div class="drawer-header">
+            <h3>Your Shopping Cart</h3>
+            <button class="close-btn" onclick="closeCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body">
+            <div id="cartItems"></div>
+        </div>
+        <div class="drawer-footer">
+            <div class="cart-total">
+                <span>Total Amount</span>
+                <span id="cartTotal">₹0</span>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="openCheckout()">Checkout Now</button>
+        </div>
+    </div>
+
+    <!-- Wishlist Drawer -->
+    <div class="drawer-overlay" id="wishlistOverlay"></div>
+    <div class="drawer" id="wishlistDrawer">
+        <div class="drawer-header">
+            <h3>Your Wishlist</h3>
+            <button class="close-btn" onclick="toggleWishlist()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body">
+            <div id="wishlistItems"></div>
+        </div>
+    </div>
+
+    <!-- User Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal-content">
+            <button class="modal-close" onclick="closeAuth()"><i class="fas fa-times"></i></button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Sign Up</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <input type="hidden" id="authMode" value="login">
+
+                <!-- Login Fields -->
+                <div id="loginFields">
+                    <div class="form-group">
+                        <label>Email or Username</label>
+                        <input id="loginUser" class="form-control" placeholder="Enter email or username">
+                        <small class="error-text" id="loginUserError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input id="loginPass" type="password" class="form-control" placeholder="Enter password">
+                        <small class="error-text" id="loginPassError"></small>
+                    </div>
+                </div>
+
+                <!-- Register Fields -->
+                <div id="registerFields" class="hidden">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input id="regName" class="form-control" placeholder="John Doe">
+                        <small class="error-text" id="regNameError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number *</label>
+                        <input id="regPhone" type="tel" class="form-control" placeholder="9876543210">
+                        <small class="error-text" id="regPhoneError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input id="regEmail" type="email" class="form-control" placeholder="your.email@example.com">
+                        <small class="error-text" id="regEmailError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input id="regCity" class="form-control" placeholder="Coimbatore">
+                        <small class="error-text" id="regCityError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input id="regPass" type="password" class="form-control" placeholder="Min 6 characters">
+                        <small class="error-text" id="regPassError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password *</label>
+                        <input id="regPassConfirm" type="password" class="form-control" placeholder="Re-enter password">
+                        <small class="error-text" id="regPassConfirmError"></small>
+                    </div>
+                </div>
+
+                <button id="authSubmit" type="submit" class="btn btn-primary btn-block">Sign In</button>
+                <p class="form-hint" style="text-align: center; margin-top: 1rem; color: #666; font-size: 0.9rem;">Demo:
+                    user@example.com / User123</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Auth Modal -->
+    <div id="adminAuthModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAdminAuth()"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <div class="modal-icon"
+                    style="width: 60px; height: 60px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-lock" style="font-size: 1.5rem; color: var(--primary);"></i>
+                </div>
+                <h2 style="text-align: center;">Admin Login</h2>
+                <p style="text-align: center; color: #666;">Access the admin dashboard</p>
+            </div>
+            <form id="adminAuthForm" onsubmit="handleAdminAuth(event)">
+                <div class="form-group">
+                    <label>Admin Username</label>
+                    <input id="adminUser" class="form-control" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Admin Password</label>
+                    <input id="adminPass" type="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Admin Login</button>
+                <p class="form-hint" style="text-align: center; margin-top: 1rem; color: #666; font-size: 0.9rem;">Demo:
+                    admin / Admin123</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <h2>Checkout</h2>
+                <p>Complete your order</p>
+            </div>
+            <form id="checkoutForm" onsubmit="handleCheckout(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input id="shipName" class="form-control" placeholder="Recipient's name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input id="shipPhone" class="form-control" placeholder="Contact number" required>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address</label>
+                    <textarea id="shipAddress" class="form-control" rows="3" placeholder="Full delivery address"
+                        required></textarea>
+                </div>
+                <div class="form-row" style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>City</label>
+                        <input id="shipCity" class="form-control" placeholder="City" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Pincode</label>
+                        <input id="shipPincode" class="form-control" placeholder="Pincode" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="paymentMethod" class="form-control" onchange="togglePaymentNote()" required>
+                        <option value="Cash on Delivery">Cash on Delivery</option>
+                        <option value="Online Payment">Online Payment (UPI/Card)</option>
+                    </select>
+                    <p id="onlinePaymentNote"
+                        style="display: none; font-size: 0.85rem; color: var(--primary); margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> Online payment gateway integration is coming soon! Please use Cash on
+                        Delivery for now.
+                    </p>
+                </div>
+
+                <div class="checkout-summary" id="checkoutSummary"
+                    style="background: #f9f9f9; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <!-- Order summary via JS -->
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-check-circle"></i> Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Track Order Modal -->
+    <div id="trackOrderModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeTrackOrder()"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <div class="modal-icon"
+                    style="width: 60px; height: 60px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-truck" style="font-size: 1.5rem; color: var(--primary);"></i>
+                </div>
+                <h2 style="text-align: center;">My Orders</h2>
+                <p style="text-align: center; color: #666;">Track your recently placed orders</p>
+            </div>
+            <div id="orderTrackingList" style="max-height: 400px; overflow-y: auto; padding: 0.5rem;">
+                <!-- Orders will be listed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/script.js"></script>
+    <script src="js/product-detail.js"></script>
+</body>
+
+</html>

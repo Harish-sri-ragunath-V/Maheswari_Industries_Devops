@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Orders - MAHESWARI INDUSTRIES</title>
+    <meta name="description" content="Track your orders at Maheswari Industries." />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Main Header -->
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="brand" onclick="window.location.href='index.html'">
+                <div class="logo-box">
+                    <img src="img/logo.jpg" alt="Maheswari Industries Logo">
+                </div>
+                <div class="brand-text">
+                    <h1>SRI MAHESWARI INDUSTRIES</h1>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="headerSearch" placeholder="Search for furniture, sofas, beds...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="header-actions">
+                <div class="header-action-item" onclick="window.location.href='index.html#contact'">
+                    <i class="fas fa-headset"></i>
+                    <span>Help</span>
+                </div>
+                <div class="header-action-item" onclick="toggleWishlist()">
+                    <i class="fas fa-heart"></i>
+                    <span>Wishlist</span>
+                    <span class="action-badge" id="wishlistCount">0</span>
+                </div>
+                <div class="header-action-item" onclick="window.location.href='cart.html'">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Cart</span>
+                    <span class="action-badge" id="cartCount">0</span>
+                </div>
+                <div class="header-action-item user-dropdown">
+                    <i class="fas fa-user"></i>
+                    <span id="userDisplayName">Account</span>
+                    <div class="user-dropdown-menu">
+                        <a href="#" onclick="openAuth('login')" id="loginDropdownBtn"><i class="fas fa-sign-in-alt"></i>
+                            Login</a>
+                        <a href="#" onclick="openAuth('register')" id="signupDropdownBtn"><i
+                                class="fas fa-user-plus"></i> Sign Up</a>
+                        <a href="orders.html" id="trackOrderDropdownBtn" class="hidden"><i
+                                class="fas fa-truck"></i> My Orders</a>
+                        <a href="#" onclick="handleLogout()" id="logoutDropdownBtn" class="hidden"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
+                        <hr>
+                        <a href="#" onclick="openAdminAuth()"><i class="fas fa-lock"></i> Admin Login</a>
+                        <a href="admin.html" class="hidden" id="adminDashboardLink"><i
+                                class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="orders-page-section" style="padding: 4rem 0; min-height: 60vh; background: #fdfdfd;">
+            <div class="container" style="max-width: 800px; margin: 0 auto;">
+                <button class="btn btn-outline-primary" onclick="window.location.href='index.html'" style="margin-bottom: 2rem;">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </button>
+                <h2 style="margin-bottom: 2rem; color: var(--primary);">My Orders</h2>
+                <div id="orderTrackingList" style="background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 300px;">
+                    <!-- Items rendered by renderTrackOrder() -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer" style="padding: 4rem 0; background: #1a1a1a; color: #fff;">
+        <div class="container">
+            <div style="text-align: center;">
+                <p>&copy; 2026 Sri Maheswari Industries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Modals -->
+    <!-- Wishlist Drawer -->
+    <div class="drawer-overlay" id="wishlistOverlay"></div>
+    <div class="drawer" id="wishlistDrawer">
+        <div class="drawer-header">
+            <h3>Your Wishlist</h3>
+            <button class="close-btn" onclick="toggleWishlist()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body">
+            <div id="wishlistItems"></div>
+        </div>
+    </div>
+
+    <!-- User Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal-content">
+            <button class="modal-close" onclick="closeAuth()"><i class="fas fa-times"></i></button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Sign Up</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <input type="hidden" id="authMode" value="login">
+                <div id="loginFields">
+                    <div class="form-group">
+                        <label>Email or Username</label>
+                        <input id="loginUser" class="form-control" placeholder="Enter email or username">
+                        <small class="error-text" id="loginUserError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input id="loginPass" type="password" class="form-control" placeholder="Enter password">
+                        <small class="error-text" id="loginPassError"></small>
+                    </div>
+                </div>
+                <div id="registerFields" class="hidden">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input id="regName" class="form-control" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number *</label>
+                        <input id="regPhone" type="tel" class="form-control" placeholder="9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input id="regEmail" type="email" class="form-control" placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input id="regCity" class="form-control" placeholder="Coimbatore">
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input id="regPass" type="password" class="form-control" placeholder="Min 6 characters">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password *</label>
+                        <input id="regPassConfirm" type="password" class="form-control" placeholder="Re-enter password">
+                        <small class="error-text" id="regPassConfirmError"></small>
+                    </div>
+                </div>
+                <button id="authSubmit" type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Admin Auth Modal -->
+    <div id="adminAuthModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAdminAuth()"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <div class="modal-icon" style="width: 60px; height: 60px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-lock" style="font-size: 1.5rem; color: var(--primary);"></i>
+                </div>
+                <h2>Admin Login</h2>
+            </div>
+            <form id="adminAuthForm" onsubmit="handleAdminAuth(event)">
+                <div class="form-group">
+                    <label>Admin Username</label>
+                    <input id="adminUser" class="form-control" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Admin Password</label>
+                    <input id="adminPass" type="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Admin Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            renderTrackOrder();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Shopping Cart - MAHESWARI INDUSTRIES</title>
+    <meta name="description" content="Your Shopping Cart at Maheswari Industries." />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Main Header -->
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="brand" onclick="window.location.href='index.html'">
+                <div class="logo-box">
+                    <img src="img/logo.jpg" alt="Maheswari Industries Logo">
+                </div>
+                <div class="brand-text">
+                    <h1>SRI MAHESWARI INDUSTRIES</h1>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="headerSearch" placeholder="Search for furniture, sofas, beds...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="header-actions">
+                <div class="header-action-item" onclick="window.location.href='index.html#contact'">
+                    <i class="fas fa-headset"></i>
+                    <span>Help</span>
+                </div>
+                <div class="header-action-item" onclick="toggleWishlist()">
+                    <i class="fas fa-heart"></i>
+                    <span>Wishlist</span>
+                    <span class="action-badge" id="wishlistCount">0</span>
+                </div>
+                <div class="header-action-item" onclick="window.location.href='cart.html'">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Cart</span>
+                    <span class="action-badge" id="cartCount">0</span>
+                </div>
+                <div class="header-action-item user-dropdown">
+                    <i class="fas fa-user"></i>
+                    <span id="userDisplayName">Account</span>
+                    <div class="user-dropdown-menu">
+                        <a href="#" onclick="openAuth('login')" id="loginDropdownBtn"><i class="fas fa-sign-in-alt"></i>
+                            Login</a>
+                        <a href="#" onclick="openAuth('register')" id="signupDropdownBtn"><i
+                                class="fas fa-user-plus"></i> Sign Up</a>
+                        <a href="orders.html" id="trackOrderDropdownBtn" class="hidden"><i
+                                class="fas fa-truck"></i> My Orders</a>
+                        <a href="#" onclick="handleLogout()" id="logoutDropdownBtn" class="hidden"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
+                        <hr>
+                        <a href="#" onclick="openAdminAuth()"><i class="fas fa-lock"></i> Admin Login</a>
+                        <a href="admin.html" class="hidden" id="adminDashboardLink"><i
+                                class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="cart-page-section" style="padding: 4rem 0; min-height: 60vh; background: #fdfdfd;">
+            <div class="container">
+                <button class="btn btn-outline-primary" onclick="window.location.href='index.html'" style="margin-bottom: 2rem;">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </button>
+                <h2 style="margin-bottom: 2rem; color: var(--primary);">Your Shopping Cart</h2>
+                <div class="cart-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                    <!-- Cart Items List reused from existing script -->
+                    <div id="cartItems" style="background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 300px;">
+                        <!-- Items rendered by renderCart() -->
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="cart-summary" style="background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); align-self: start;">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 1rem;">Order Summary</h3>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 1.1rem; color: #555;">
+                            <span>Subtotal</span>
+                            <span id="cartTotal">₹0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 1.1rem; color: #555;">
+                            <span>Shipping</span>
+                            <span style="color: #27ae60;">Free</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; font-size: 1.3rem; font-weight: 700; color: var(--primary); border-top: 1px solid #eee; padding-top: 1rem;">
+                            <span>Total</span>
+                            <span id="cartTotalFinal">₹0</span>
+                        </div>
+                        <button class="btn btn-primary btn-block" onclick="openCheckout()" style="padding: 1rem; font-size: 1.1rem;">
+                            <i class="fas fa-lock"></i> Secure Checkout
+                        </button>
+                        <button class="btn btn-outline-primary btn-block" onclick="window.location.href='index.html'" style="padding: 1rem; font-size: 1.1rem; margin-top: 0.75rem;">
+                            <i class="fas fa-shopping-bag"></i> Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer" style="padding: 4rem 0; background: #1a1a1a; color: #fff;">
+        <div class="container">
+            <div style="text-align: center;">
+                <p>&copy; 2026 Sri Maheswari Industries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Modals -->
+    <!-- Wishlist Drawer -->
+    <div class="drawer-overlay" id="wishlistOverlay"></div>
+    <div class="drawer" id="wishlistDrawer">
+        <div class="drawer-header">
+            <h3>Your Wishlist</h3>
+            <button class="close-btn" onclick="toggleWishlist()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body">
+            <div id="wishlistItems"></div>
+        </div>
+    </div>
+
+    <!-- User Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal-content">
+            <button class="modal-close" onclick="closeAuth()"><i class="fas fa-times"></i></button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Sign Up</button>
+            </div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <input type="hidden" id="authMode" value="login">
+                <div id="loginFields">
+                    <div class="form-group">
+                        <label>Email or Username</label>
+                        <input id="loginUser" class="form-control" placeholder="Enter email or username">
+                        <small class="error-text" id="loginUserError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input id="loginPass" type="password" class="form-control" placeholder="Enter password">
+                        <small class="error-text" id="loginPassError"></small>
+                    </div>
+                </div>
+                <div id="registerFields" class="hidden">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input id="regName" class="form-control" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number *</label>
+                        <input id="regPhone" type="tel" class="form-control" placeholder="9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input id="regEmail" type="email" class="form-control" placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>City *</label>
+                        <input id="regCity" class="form-control" placeholder="Coimbatore">
+                    </div>
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input id="regPass" type="password" class="form-control" placeholder="Min 6 characters">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password *</label>
+                        <input id="regPassConfirm" type="password" class="form-control" placeholder="Re-enter password">
+                        <small class="error-text" id="regPassConfirmError"></small>
+                    </div>
+                </div>
+                <button id="authSubmit" type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Auth Modal -->
+    <div id="adminAuthModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAdminAuth()"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <div class="modal-icon" style="width: 60px; height: 60px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-lock" style="font-size: 1.5rem; color: var(--primary);"></i>
+                </div>
+                <h2>Admin Login</h2>
+            </div>
+            <form id="adminAuthForm" onsubmit="handleAdminAuth(event)">
+                <div class="form-group">
+                    <label>Admin Username</label>
+                    <input id="adminUser" class="form-control" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Admin Password</label>
+                    <input id="adminPass" type="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Admin Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <h2>Checkout</h2>
+                <p>Complete your order</p>
+            </div>
+            <form id="checkoutForm" onsubmit="handleCheckout(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input id="shipName" class="form-control" placeholder="Recipient's name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input id="shipPhone" class="form-control" placeholder="Contact number" required>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address</label>
+                    <textarea id="shipAddress" class="form-control" rows="3" placeholder="Full delivery address"
+                        required></textarea>
+                </div>
+                <div class="form-row" style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>City</label>
+                        <input id="shipCity" class="form-control" placeholder="City" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Pincode</label>
+                        <input id="shipPincode" class="form-control" placeholder="Pincode" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="paymentMethod" class="form-control" onchange="togglePaymentNote()" required>
+                        <option value="Cash on Delivery">Cash on Delivery</option>
+                        <option value="Online Payment">Online Payment (UPI/Card)</option>
+                    </select>
+                    <p id="onlinePaymentNote"
+                        style="display: none; font-size: 0.85rem; color: var(--primary); margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> Online payment gateway integration is coming soon! Please use Cash on
+                        Delivery for now.
+                    </p>
+                </div>
+
+                <div class="checkout-summary" id="checkoutSummary"
+                    style="background: #f9f9f9; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <!-- Order summary via JS -->
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-check-circle"></i> Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            renderCart();
+            // observe changes for final total using observer
+            const totalEl = document.getElementById('cartTotal');
+            const totalFinalEl = document.getElementById('cartTotalFinal');
+            if (totalEl && totalFinalEl) {
+                const observer = new MutationObserver(() => {
+                    totalFinalEl.textContent = totalEl.textContent;
+                });
+                observer.observe(totalEl, { childList: true, characterData: true, subtree: true });
+            }
+            
+            // Re-define renderCart directly in this page to apply a standalone style, or just let script.js format it.
+            // script.js will render it into #cartItems perfectly fine since it outputs a list.
+        });
+    </script>
+</body>
+</html>
