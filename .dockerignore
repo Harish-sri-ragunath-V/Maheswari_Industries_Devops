@@ -1,5 +1,14 @@
 node_modules
 .git
-*.zip
+.gitignore
+Dockerfile
+Dockerfile.frontend
+docker-compose.yml
 *.log
+*.zip
 .DS_Store
+npm-debug.log
+coverage
+dist
+build
+.env
