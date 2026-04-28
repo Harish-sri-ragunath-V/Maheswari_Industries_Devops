@@ -84,15 +84,6 @@ const subSubCategories = [
             'https://www.at-home.co.in/cdn/shop/products/StarkWardrobe.jpg?v=1626343516',
             'https://www.at-home.co.in/cdn/shop/products/StarkWardrobe2.jpg?v=1626343516'
         ]
-    },
-    {
-        category: 'Dining', subcategory: 'Dining Sets', ss: '6 Seater', imgs: [
-            'https://images.unsplash.com/photo-1560448205-4d9b3e6bb6db?auto=format&fit=crop&w=800&q=80',
-            'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=800&q=80',
-            'https://www.royaloakindia.com/media/catalog/product/d/t/dt30451-8s.jpg',
-            'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=800&q=80',
-            'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=800&q=80'
-        ]
     }
 ];
 
