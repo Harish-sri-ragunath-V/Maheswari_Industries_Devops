@@ -18,3 +18,10 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
+
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: MONGODB_URI
