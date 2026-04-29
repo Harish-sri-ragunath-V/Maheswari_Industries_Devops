@@ -2,8 +2,11 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_BACKEND = "maheshwari-cicd-backend"
-        DOCKER_IMAGE_FRONTEND = "maheshwari-cicd-frontend"
+        AWS_REGION       = "ap-south-1"
+        AWS_ACCOUNT_ID   = "573636634427"
+        ECR_BACKEND      = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/maheshwari-backend"
+        ECR_FRONTEND     = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/maheshwari-frontend"
+        CLUSTER_NAME     = "maheswari-cluster"
     }
 
     stages {
@@ -16,32 +19,38 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE_BACKEND .'
-                sh 'docker build -t $DOCKER_IMAGE_FRONTEND -f Dockerfile.frontend .'
+                sh 'docker build -t $ECR_BACKEND:latest .'
+                sh 'docker build -t $ECR_FRONTEND:latest -f Dockerfile.frontend .'
             }
         }
 
-        stage('Stop Old Containers (Optional Cleanup)') {
+        stage('Push to ECR') {
             steps {
-                sh 'docker ps -q --filter "ancestor=$DOCKER_IMAGE_BACKEND" | xargs -r docker stop'
-                sh 'docker ps -q --filter "ancestor=$DOCKER_IMAGE_FRONTEND" | xargs -r docker stop'
+                sh '''
+                    aws ecr get-login-password --region $AWS_REGION | \
+                    docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+                    docker push $ECR_BACKEND:latest
+                    docker push $ECR_FRONTEND:latest
+                '''
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy to EKS') {
             steps {
+                sh 'aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION'
                 sh 'kubectl apply -f k8s/'
             }
         }
 
-        stage('Restart Deployment (Force Update)') {
+        stage('Restart Deployments') {
             steps {
                 sh 'kubectl rollout restart deployment/backend'
                 sh 'kubectl rollout restart deployment/frontend'
             }
         }
 
-        stage('Verify Deployment') {
+        stage('Verify') {
             steps {
                 sh 'kubectl get pods'
                 sh 'kubectl get services'
@@ -50,11 +59,7 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Deployment to Kubernetes SUCCESS ✅'
-        }
-        failure {
-            echo 'Deployment FAILED ❌'
-        }
+        success { echo 'Deployed to AWS EKS ✅' }
+        failure { echo 'Deployment FAILED ❌' }
     }
 }

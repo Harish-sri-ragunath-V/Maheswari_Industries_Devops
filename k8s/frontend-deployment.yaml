@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: maheshwari-cicd-frontend
-          imagePullPolicy: Never
+          image: 573636634427.dkr.ecr.ap-south-1.amazonaws.com/maheshwari-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80

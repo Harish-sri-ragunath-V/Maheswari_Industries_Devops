@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: backend
-          image: maheshwari-cicd-backend
-          imagePullPolicy: Never
+          image: 573636634427.dkr.ecr.ap-south-1.amazonaws.com/maheshwari-backend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
 
